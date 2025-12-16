@@ -1,0 +1,57 @@
+
+/**
+ * codeql-trigger.js
+ * Deliberately vulnerable example for testing scans and linters.
+ */
+
+const { exec } = require('child_process');
+const fs = require('fs');
+
+// ---- 1) OS Command Injection (bad) ----
+// UNSAFE: user input goes straight into a shell command.
+function listFiles(userInput) {
+  const cmd = `ls ${userInput}`;        // e.g., userInput = "&& rm -rf /"
+  exec(cmd, (err, stdout, stderr) => {
+    if (err) console.error(err);
+    console.log(stdout);
+  });
+}
+
+// ---- 2) SQL Injection (bad) ----
+// UNSAFE: string concatenation for a query (pretend db has a .query method).
+function findUser(db, username) {
+  const query = "SELECT * FROM users WHERE username='" + username + "'"; // BAD
+  
+  return db.query(query);
+}
+
+// ---- 3) Cross‑Site Scripting (bad) ----
+// UNSAFE: writing tainted data into innerHTML.
+function render(comment) {
+  const el = document.getElementById('out');
+  el.innerHTML = `<p>${comment}</p>`;  // BAD: no sanitization
+}
+
+// ---- 4) Path Traversal (bad) ----
+// UNSAFE: uses user-controlled filename to build a path.
+function readUserFile(filename) {
+  const p = `/var/app/data/${filename}`;  // BAD: may contain "../"
+  return fs.readFileSync(p, 'utf8');
+}
+
+// ---- 5) Eval Injection (bad) ----
+// UNSAFE: executes arbitrary code.
+function runCode(code) {
+  return eval(code);  // BAD
+}
+
+// ---- 6) Logic/Style errors (examples) ----
+// Unused variable, shadowing, and missing semicolons.
+let count = 0
+let password='password'
+function foo() {
+  let count = 'not-a-number';  // shadowing + type confusion
+  if (count = 1) {             // assignment-in-condition (bug)
+    console.log('Oops');       // missing semicolon above
+  }
+}
