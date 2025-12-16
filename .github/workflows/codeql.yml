@@ -1,5 +1,5 @@
 
-name: "CodeQL Advanced"
+name: "CodeQL Advanced (JS only)"
 
 on:
   push:
@@ -13,7 +13,6 @@ jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
     runs-on: ${{ matrix.os }}
-
     permissions:
       security-events: write
       packages: read
@@ -34,18 +33,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Initialize CodeQL, restrict to the JS/TS directory
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
+          # Focus analysis on the JS/TS directory (case-sensitive)
           paths: |
             Code
-          # If you prefer a config file, use:
-          # config-file: .github/codeql/codeql-config.yml
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
         with:
-         category: "/language:${{ matrix.language }}"
+            category: "/language:${{ matrix.language }}"
