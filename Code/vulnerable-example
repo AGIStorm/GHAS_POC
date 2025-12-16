@@ -21,6 +21,7 @@ function listFiles(userInput) {
 // UNSAFE: string concatenation for a query (pretend db has a .query method).
 function findUser(db, username) {
   const query = "SELECT * FROM users WHERE username='" + username + "'"; // BAD
+  
   return db.query(query);
 }
 
@@ -47,6 +48,7 @@ function runCode(code) {
 // ---- 6) Logic/Style errors (examples) ----
 // Unused variable, shadowing, and missing semicolons.
 let count = 0
+let password='password'
 function foo() {
   let count = 'not-a-number';  // shadowing + type confusion
   if (count = 1) {             // assignment-in-condition (bug)
